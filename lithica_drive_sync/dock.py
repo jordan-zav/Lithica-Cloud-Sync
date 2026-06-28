@@ -75,7 +75,9 @@ class LithicaDriveDock(QDockWidget):
     def __init__(self, iface, plugin_dir: Path):
         self.iface = iface
         self.plugin_dir = Path(plugin_dir)
-        self.tr = Translator(QLocale.system().name())
+        from qgis.core import QgsSettings
+        qgis_locale = QgsSettings().value("locale/userLocale") or QLocale.system().name()
+        self.tr = Translator(qgis_locale)
         super().__init__(self.tr.text("title"), iface.mainWindow())
         cache_root = (
             Path(QgsApplication.qgisSettingsDirPath())
