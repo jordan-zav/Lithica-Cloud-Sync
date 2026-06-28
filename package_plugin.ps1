@@ -35,6 +35,11 @@ Get-ChildItem -LiteralPath $source -Recurse -File |
         Copy-Item -LiteralPath $_.FullName -Destination $destination
     }
 
+$licenseSource = Join-Path $scriptRoot "LICENSE"
+if (Test-Path -LiteralPath $licenseSource) {
+    Copy-Item -LiteralPath $licenseSource -Destination (Join-Path $stagingPlugin "LICENSE")
+}
+
 $dangerPatterns = @(
     "-----BEGIN PRIVATE KEY-----",
     '"type"\s*:\s*"service_account"',
