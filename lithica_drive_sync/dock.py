@@ -86,9 +86,9 @@ QLabel#statusLabel {
 """
 
 class AboutDialog(QDialog):
-    def __init__(self, parent=None, plugin_dir=None):
+    def __init__(self, parent=None, plugin_dir=None, tr=None):
         super().__init__(parent)
-        self.setWindowTitle("Acerca de Lithica Cloud Sync")
+        self.setWindowTitle(tr.text("about_title"))
         self.setMinimumWidth(400)
         
         layout = QVBoxLayout(self)
@@ -103,18 +103,18 @@ class AboutDialog(QDialog):
             logo_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(logo_label)
         
-        title = QLabel("<h2>Lithica Cloud Sync</h2>")
+        title = QLabel(f"<h2>{tr.text('title')}</h2>")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
         
-        subtitle = QLabel("Desarrollado por <b>GisGeo Dev</b>")
+        subtitle = QLabel(f"{tr.text('developed_by')} <b>GisGeo Dev</b>")
         subtitle.setAlignment(Qt.AlignCenter)
         layout.addWidget(subtitle)
         
         links = QLabel(
-            "<a href='https://gisgeo.dev' style='text-decoration: none; color: #1976d2;'>Página Web oficial (gisgeo.dev)</a><br><br>"
-            "<a href='https://play.google.com/store/apps/details?id=com.gisgeodev.lithicaexplorer' style='text-decoration: none; color: #1976d2;'>Descarga Lithica Explorer en Google Play</a><br><br>"
-            "<a href='https://www.linkedin.com/in/jordan-zav/' style='text-decoration: none; color: #1976d2;'>Perfil en LinkedIn (Jordan Zavaleta)</a>"
+            f"<a href='https://gisgeo.dev' style='text-decoration: none; color: #1976d2;'>{tr.text('website')}</a><br><br>"
+            f"<a href='https://play.google.com/store/apps/details?id=com.gisgeodev.lithicaexplorer' style='text-decoration: none; color: #1976d2;'>{tr.text('download_play')}</a><br><br>"
+            f"<a href='https://www.linkedin.com/in/jordan-zav/' style='text-decoration: none; color: #1976d2;'>{tr.text('linkedin')}</a>"
         )
         links.setAlignment(Qt.AlignCenter)
         links.setOpenExternalLinks(True)
@@ -181,7 +181,7 @@ class LithicaDriveDock(QDockWidget):
         layout.addWidget(group_account)
         
         # Grupo: Proyectos Lithica
-        group_projects = QGroupBox("Proyectos")
+        group_projects = QGroupBox(self.tr.text("projects_group"))
         layout_projects = QVBoxLayout(group_projects)
         layout_projects.setSpacing(10)
         self.refresh_button = QPushButton(self.tr.text("refresh"))
@@ -197,7 +197,7 @@ class LithicaDriveDock(QDockWidget):
         layout.addWidget(group_projects)
         
         # Grupo: Avanzado
-        group_advanced = QGroupBox("Avanzado")
+        group_advanced = QGroupBox(self.tr.text("advanced_group"))
         layout_advanced = QVBoxLayout(group_advanced)
         self.clear_button = QPushButton(self.tr.text("clear"))
         layout_advanced.addWidget(self.clear_button)
@@ -206,7 +206,7 @@ class LithicaDriveDock(QDockWidget):
         layout.addStretch()
         
         # Botón de créditos
-        self.about_button = QPushButton("Acerca de / Créditos")
+        self.about_button = QPushButton(self.tr.text("about_button"))
         self.about_button.setObjectName("aboutButton")
         self.about_button.setCursor(Qt.PointingHandCursor)
         layout.addWidget(self.about_button)
@@ -328,5 +328,5 @@ class LithicaDriveDock(QDockWidget):
         self.status.setText(self.tr.text("ready"))
 
     def show_about_dialog(self):
-        dialog = AboutDialog(self, self.plugin_dir)
+        dialog = AboutDialog(self, self.plugin_dir, self.tr)
         dialog.exec_()
