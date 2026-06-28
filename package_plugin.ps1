@@ -47,7 +47,8 @@ if ($findings) {
     throw "Packaging stopped because credential material was detected."
 }
 
-Compress-Archive -Path $stagingPlugin -DestinationPath $temporaryTarget -CompressionLevel Optimal
+$baseTarget = $temporaryTarget.Substring(0, $temporaryTarget.Length - 4)
+python -c "import shutil; shutil.make_archive(r'$baseTarget', 'zip', r'$stagingRoot')"
 
 $replaced = $false
 for ($attempt = 1; $attempt -le 5 -and -not $replaced; $attempt++) {
