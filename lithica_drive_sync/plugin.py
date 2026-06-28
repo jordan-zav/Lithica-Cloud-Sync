@@ -23,6 +23,9 @@ class LithicaDriveSyncPlugin:
         self.action.triggered.connect(self.show_dock)
         self.iface.addPluginToVectorMenu("Lithica Cloud Sync", self.action)
         self.iface.addToolBarIcon(self.action)
+        
+        # Show the dock widget automatically when the plugin is loaded/installed
+        self.show_dock()
 
     def show_dock(self):
         if self.dock is None:
