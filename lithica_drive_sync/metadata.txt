@@ -31,6 +31,6 @@ category=Vector
 tags=lithica,geology,google drive,geopackage,field mapping,lithica explorer
 experimental=True
 deprecated=False
-homepage=https://gisgeo.dev
+homepage=https://gisgeo.dev/portfolio/lithica-explorer/
 repository=https://github.com/jordan-zav/lithica-cloud-sync
 tracker=https://github.com/jordan-zav/lithica-cloud-sync/issues
