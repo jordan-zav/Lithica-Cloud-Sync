@@ -1,31 +1,55 @@
-# Lithica Drive Sync para QGIS
+# Lithica Cloud Sync para QGIS
 
-Lithica Cloud Sync es un plugin para QGIS que te permite conectar tu cuenta de Google Drive para descargar y sincronizar automáticamente tus proyectos creados en **Lithica Explorer**.
+Lithica Cloud Sync conecta QGIS con los proyectos sincronizados por Lithica Explorer y Lithica Mapper en Google Drive.
 
-Con un par de clics, podrás importar los datos espaciales (`observations.gpkg`) de tus proyectos directamente a QGIS para su análisis y visualización avanzada.
+La versión 2.0.0 detecta proyectos de ambas aplicaciones, descarga sus archivos ZIP de sincronización y abre automáticamente sus capas GeoPackage en QGIS.
 
-## Requisitos
+## Compatibilidad
 
+- Lithica Explorer con esquema lithica.drive.sync.v1 y observations.gpkg.
+- Lithica Mapper con esquema lithica.drive.sync.v2 y map.gpkg.
 - QGIS 3.34 o posterior.
-- Una cuenta de Google con acceso a Google Drive.
-- Proyectos de Lithica Explorer previamente sincronizados en la nube.
+- Windows, Linux y macOS con acceso a Google Drive mediante OAuth 2.0.
+
+## Funciones principales
+
+- Conexión segura con Google Drive usando el permiso limitado drive.file.
+- Detección de las carpetas Lithica Explorer y Lithica Mapper en Mi unidad.
+- Identificación visible del producto de origen en la lista de proyectos.
+- Descarga y validación segura de los archivos ZIP.
+- Apertura automática de todas las capas disponibles en el GeoPackage.
+- Grupos separados para Explorer y Mapper dentro del árbol de capas de QGIS.
+- Caché local reemplazable para actualizar proyectos descargados.
 
 ## Instalación
 
-1. Descarga la última versión en formato `.zip` desde la sección de **Releases** de este repositorio.
-2. Abre QGIS y dirígete al menú **Complementos** > **Administrar e instalar complementos**.
-3. Selecciona la pestaña **Instalar a partir de ZIP**.
-4. Busca el archivo descargado (`Lithica Cloud Sync-1.0.0.zip`) y haz clic en instalar.
-5. El panel de Lithica Cloud Sync aparecerá disponible para conectarte a tu cuenta.
+1. Descarga Lithica Cloud Sync-2.0.0.zip desde la sección Releases del repositorio.
+2. Abre QGIS.
+3. Ve a Complementos y luego a Administrar e instalar complementos.
+4. Selecciona Instalar a partir de ZIP.
+5. Elige el archivo descargado y confirma la instalación.
+6. Abre el panel Lithica Cloud Sync.
 
 ## Uso
 
-1. Haz clic en **Conectar** para enlazar tu cuenta de Google Drive.
-2. Se abrirá una pestaña en tu navegador para que inicies sesión de forma segura y des permiso (sólo acceso a archivos de la aplicación).
-3. Una vez conectado, haz clic en **Actualizar lista** para ver tus proyectos disponibles.
-4. Selecciona un proyecto y presiona **Descargar y abrir**. El plugin descargará los datos y los añadirá automáticamente como capas en tu proyecto de QGIS.
+1. Pulsa Conectar y autoriza tu cuenta de Google Drive.
+2. Pulsa Actualizar lista.
+3. Selecciona un proyecto identificado como Explorer o Mapper.
+4. Pulsa Descargar y abrir.
+5. Las capas aparecerán bajo el grupo correspondiente en QGIS.
+
+## Seguridad
+
+El plugin no incluye credenciales privadas ni cuentas de servicio. La autorización se realiza mediante OAuth 2.0 y se almacena usando el sistema de autenticación de QGIS.
+
+Los archivos descargados se validan antes de extraerse. Se rechazan rutas inseguras, enlaces simbólicos, esquemas desconocidos y archivos que excedan los límites configurados.
 
 ## Soporte
 
 Desarrollado por [GisGeo Dev](https://gisgeo.dev).
-Para cualquier consulta o reporte de errores, por favor abre un *Issue* en este repositorio.
+
+Para consultas o errores, utiliza el [seguimiento de incidencias](https://github.com/jordan-zav/lithica-cloud-sync/issues).
+
+## Licencia
+
+MIT.
