@@ -6,14 +6,15 @@ def open_project_layers(iface, extracted):
 
     project = QgsProject.instance()
     root = project.layerTreeRoot()
-    parent = root.findGroup("Lithica Explorer") or root.addGroup("Lithica Explorer")
+    product_name = "Lithica Mapper" if extracted.product == "mapper" else "Lithica Explorer"
+    parent = root.findGroup(product_name) or root.addGroup(product_name)
     old = parent.findGroup(extracted.project_name)
     visible = old.itemVisibilityChecked() if old else True
 
     path_str = str(Path(extracted.geopackage))
     temp_layer = QgsVectorLayer(path_str, "temp", "ogr")
     if not temp_layer.isValid():
-        raise RuntimeError("observations.gpkg is not a valid QGIS vector layer")
+        raise RuntimeError(f"{extracted.geopackage.name} is not a valid QGIS vector layer")
 
     sub_layers = temp_layer.dataProvider().subLayers()
     layers_to_add = []
@@ -32,7 +33,7 @@ def open_project_layers(iface, extracted):
         layers_to_add.append(QgsVectorLayer(path_str, extracted.project_name, "ogr"))
 
     if not layers_to_add:
-        raise RuntimeError("No valid layers found in observations.gpkg")
+        raise RuntimeError(f"No valid layers found in {extracted.geopackage.name}")
 
     if old:
         parent.removeChildNode(old)
@@ -41,6 +42,7 @@ def open_project_layers(iface, extracted):
 
     for layer in layers_to_add:
         layer.setCustomProperty("lithica/projectId", extracted.project_id)
+        layer.setCustomProperty("lithica/product", extracted.product)
         project.addMapLayer(layer, False)
         group.addLayer(layer)
 

@@ -44,13 +44,15 @@ class SyncService:
                     "modifiedTime": remote.modified_time.isoformat(),
                     "md5Checksum": remote.md5_checksum,
                     "projectName": extracted.project_name,
+                    "product": extracted.product,
                 },
             )
             return ExtractedProject(
                 project_id=extracted.project_id,
                 project_name=extracted.project_name,
                 root=current,
-                geopackage=current / "observations.gpkg",
+                geopackage=current / extracted.geopackage.name,
+                product=extracted.product,
             )
         except Exception:
             if pending.exists():

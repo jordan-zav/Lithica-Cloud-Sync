@@ -17,7 +17,7 @@ def test_package_uses_portable_zip_paths():
         capture_output=True,
         text=True,
     )
-    target = plugin_root.parent / "artifacts" / "lithica_drive_sync-0.1.0.zip"
+    target = plugin_root.parent / "artifacts" / "Lithica Cloud Sync-2.0.0.zip"
 
     with zipfile.ZipFile(target) as package:
         names = package.namelist()

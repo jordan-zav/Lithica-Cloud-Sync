@@ -32,6 +32,32 @@ def test_extracts_valid_lithica_project(tmp_path):
 
     assert result.project_id == "p1"
     assert result.geopackage.name == "observations.gpkg"
+    assert result.product == "explorer"
+
+
+def test_extracts_valid_mapper_project(tmp_path):
+    source = tmp_path / "mapper.zip"
+    _write_zip(
+        source,
+        {
+            "manifest.json": json.dumps(
+                {
+                    "syncSchema": "lithica.drive.sync.v2",
+                    "product": "mapper",
+                    "projectKind": "geological_map",
+                    "projectId": "m1",
+                    "projectName": "Regional Map",
+                }
+            ),
+            "map.gpkg": b"SQLite format 3\x00",
+        },
+    )
+
+    result = validate_and_extract(source, tmp_path / "mapper-out")
+
+    assert result.project_id == "m1"
+    assert result.geopackage.name == "map.gpkg"
+    assert result.product == "mapper"
 
 
 def test_rejects_path_traversal(tmp_path):

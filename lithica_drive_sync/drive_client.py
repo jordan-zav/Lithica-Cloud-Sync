@@ -5,7 +5,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from .config import FOLDER_NAME, PROJECT_PREFIX
+from .config import FOLDER_NAMES, PROJECT_PREFIX
 from .models import ProjectFile
 
 
@@ -19,38 +19,43 @@ class DriveClient:
         self._timeout = timeout
 
     def list_projects(self, access_token: str) -> list[ProjectFile]:
-        folder_query = (
-            "mimeType='application/vnd.google-apps.folder' "
-            f"and name='{FOLDER_NAME}' and trashed=false"
-        )
-        folders = self._list(access_token, folder_query, "files(id)")
-        if not folders:
-            return []
-        folder_id = folders[0]["id"]
-        query = (
-            f"'{folder_id}' in parents and trashed=false and mimeType='application/zip'"
-        )
-        rows = self._list(
-            access_token,
-            query,
-            "nextPageToken,files(id,name,modifiedTime,size,md5Checksum)",
-        )
         result = []
-        for row in rows:
-            name = str(row.get("name", ""))
-            if not name.startswith(PROJECT_PREFIX) or not name.endswith(".zip"):
-                continue
-            result.append(
-                ProjectFile(
-                    id=str(row["id"]),
-                    name=name,
-                    modified_time=datetime.fromisoformat(
-                        str(row["modifiedTime"]).replace("Z", "+00:00")
-                    ),
-                    size=int(row.get("size", 0)),
-                    md5_checksum=row.get("md5Checksum"),
-                )
+        for folder_name in FOLDER_NAMES:
+            folder_query = (
+                "'root' in parents and "
+                "mimeType='application/vnd.google-apps.folder' "
+                f"and name='{folder_name}' and trashed=false"
             )
+            folders = self._list(access_token, folder_query, "files(id)")
+            if not folders:
+                continue
+            product = "mapper" if folder_name == "Lithica Mapper" else "explorer"
+            for folder in folders:
+                query = (
+                    f"'{folder['id']}' in parents and trashed=false "
+                    "and mimeType='application/zip'"
+                )
+                rows = self._list(
+                    access_token,
+                    query,
+                    "nextPageToken,files(id,name,modifiedTime,size,md5Checksum)",
+                )
+                for row in rows:
+                    name = str(row.get("name", ""))
+                    if not name.startswith(PROJECT_PREFIX) or not name.endswith(".zip"):
+                        continue
+                    result.append(
+                        ProjectFile(
+                            id=str(row["id"]),
+                            name=name,
+                            modified_time=datetime.fromisoformat(
+                                str(row["modifiedTime"]).replace("Z", "+00:00")
+                            ),
+                            size=int(row.get("size", 0)),
+                            md5_checksum=row.get("md5Checksum"),
+                            source_product=product,
+                        )
+                    )
         return sorted(result, key=lambda item: item.modified_time, reverse=True)
 
     def download(self, access_token: str, file: ProjectFile, target: Path) -> Path:

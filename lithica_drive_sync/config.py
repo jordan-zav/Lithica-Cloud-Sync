@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
-FOLDER_NAME = "Lithica Explorer"
+FOLDER_NAMES = ("Lithica Explorer", "Lithica Mapper")
 PROJECT_PREFIX = "lithica-project-"
 
 

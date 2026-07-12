@@ -42,6 +42,22 @@ def test_lists_only_lithica_zip_files():
                     }
                 ).encode()
             ),
+            FakeResponse(json.dumps({"files": [{"id": "mapper-folder"}]}).encode()),
+            FakeResponse(
+                json.dumps(
+                    {
+                        "files": [
+                            {
+                                "id": "f2",
+                                "name": "lithica-project-m1.zip",
+                                "modifiedTime": "2026-06-28T10:00:00Z",
+                                "size": "20",
+                                "md5Checksum": "def",
+                            }
+                        ]
+                    }
+                ).encode()
+            ),
         ]
     )
 
@@ -51,5 +67,9 @@ def test_lists_only_lithica_zip_files():
 
     files = DriveClient(opener=opener).list_projects("token")
 
-    assert [item.name for item in files] == ["lithica-project-p1.zip"]
+    assert [item.name for item in files] == [
+        "lithica-project-m1.zip",
+        "lithica-project-p1.zip",
+    ]
+    assert [item.source_product for item in files] == ["mapper", "explorer"]
     assert all("upload" not in url for url in calls)

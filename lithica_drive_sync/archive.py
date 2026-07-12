@@ -5,7 +5,10 @@ from pathlib import Path, PurePosixPath
 
 from .models import ExtractedProject
 
-EXPECTED_SCHEMA = "lithica.drive.sync.v1"
+SUPPORTED_SCHEMAS = {
+    "explorer": "lithica.drive.sync.v1",
+    "mapper": "lithica.drive.sync.v2",
+}
 
 
 class ArchiveError(ValueError):
@@ -47,15 +50,20 @@ def validate_and_extract(
             total += entry.file_size
             if total > max_extracted:
                 raise ArchiveError("Archive exceeds extracted size limit")
-        required = {"manifest.json", "observations.gpkg"}
-        if not required.issubset(names):
-            raise ArchiveError("Archive lacks manifest.json or observations.gpkg")
+        if "manifest.json" not in names:
+            raise ArchiveError("Archive lacks manifest.json")
         try:
             manifest = json.loads(archive.read("manifest.json").decode("utf-8"))
         except (KeyError, UnicodeError, ValueError) as error:
             raise ArchiveError(f"Invalid manifest: {error}") from error
-        if manifest.get("syncSchema") != EXPECTED_SCHEMA:
+        product = str(manifest.get("product", "explorer")).strip().lower()
+        if product not in SUPPORTED_SCHEMAS:
+            raise ArchiveError("Unsupported Lithica product")
+        if manifest.get("syncSchema") != SUPPORTED_SCHEMAS[product]:
             raise ArchiveError("Unsupported synchronization schema")
+        geopackage_name = "map.gpkg" if product == "mapper" else "observations.gpkg"
+        if geopackage_name not in names:
+            raise ArchiveError(f"Archive lacks {geopackage_name}")
         project_id = str(manifest.get("projectId", "")).strip()
         project_name = str(manifest.get("projectName", "")).strip()
         if not project_id or not project_name:
@@ -68,7 +76,8 @@ def validate_and_extract(
         project_id=project_id,
         project_name=project_name,
         root=destination,
-        geopackage=destination / "observations.gpkg",
+        geopackage=destination / geopackage_name,
+        product=product,
     )
 
 

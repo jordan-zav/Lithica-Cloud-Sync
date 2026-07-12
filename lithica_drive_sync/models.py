@@ -10,6 +10,7 @@ class ProjectFile:
     modified_time: datetime
     size: int
     md5_checksum: str | None = None
+    source_product: str = "explorer"
 
 
 @dataclass(frozen=True)
@@ -18,3 +19,4 @@ class ExtractedProject:
     project_name: str
     root: Path
     geopackage: Path
+    product: str = "explorer"

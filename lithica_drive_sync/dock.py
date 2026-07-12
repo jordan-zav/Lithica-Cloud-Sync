@@ -252,6 +252,8 @@ class LithicaDriveDock(QDockWidget):
         self.project_combo.clear()
         for project in projects:
             label = f"{project.name} — {project.modified_time:%Y-%m-%d %H:%M}"
+            product = "Mapper" if project.source_product == "mapper" else "Explorer"
+            label = f"[{product}] {project.name} - {project.modified_time:%Y-%m-%d %H:%M}"
             self.project_combo.addItem(label)
         if not projects:
             self.status.setText(self.tr.text("no_projects"))
