@@ -11,6 +11,6 @@ def test_metadata_declares_official_qgis_plugin():
 
     assert "name=Lithica Cloud Sync" in text
     assert "Lithica Explorer and Mapper" in text
-    assert "version=2.0.0" in text
+    assert "version=2.0.1" in text
     assert "experimental=False" in text
     assert "qgisMinimumVersion=3.34" in text

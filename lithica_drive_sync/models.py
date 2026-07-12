@@ -11,6 +11,7 @@ class ProjectFile:
     size: int
     md5_checksum: str | None = None
     source_product: str = "explorer"
+    project_name: str | None = None
 
 
 @dataclass(frozen=True)

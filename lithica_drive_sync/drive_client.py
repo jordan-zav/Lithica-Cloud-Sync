@@ -38,7 +38,7 @@ class DriveClient:
                 rows = self._list(
                     access_token,
                     query,
-                    "nextPageToken,files(id,name,modifiedTime,size,md5Checksum)",
+                    "nextPageToken,files(id,name,modifiedTime,size,md5Checksum,appProperties)",
                 )
                 for row in rows:
                     name = str(row.get("name", ""))
@@ -54,6 +54,9 @@ class DriveClient:
                             size=int(row.get("size", 0)),
                             md5_checksum=row.get("md5Checksum"),
                             source_product=product,
+                            project_name=(row.get("appProperties") or {}).get(
+                                "projectName"
+                            ),
                         )
                     )
         return sorted(result, key=lambda item: item.modified_time, reverse=True)

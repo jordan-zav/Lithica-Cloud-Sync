@@ -37,6 +37,7 @@ def test_lists_only_lithica_zip_files():
                                 "modifiedTime": "2026-06-27T10:00:00Z",
                                 "size": "10",
                                 "md5Checksum": "abc",
+                                "appProperties": {"projectName": "Project One"},
                             }
                         ]
                     }
@@ -53,6 +54,7 @@ def test_lists_only_lithica_zip_files():
                                 "modifiedTime": "2026-06-28T10:00:00Z",
                                 "size": "20",
                                 "md5Checksum": "def",
+                                "appProperties": {"projectName": "Regional Map"},
                             }
                         ]
                     }
@@ -72,4 +74,5 @@ def test_lists_only_lithica_zip_files():
         "lithica-project-p1.zip",
     ]
     assert [item.source_product for item in files] == ["mapper", "explorer"]
+    assert [item.project_name for item in files] == ["Regional Map", "Project One"]
     assert all("upload" not in url for url in calls)
