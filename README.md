@@ -2,7 +2,7 @@
 
 Lithica Cloud Sync conecta QGIS con los proyectos sincronizados por Lithica Explorer y Lithica Mapper en Google Drive.
 
-La versión 2.0.1 detecta proyectos de ambas aplicaciones, muestra el nombre real guardado por Explorer o Mapper, descarga sus archivos ZIP de sincronización y abre automáticamente sus capas GeoPackage en QGIS.
+La versión 2.0.3 detecta proyectos de ambas aplicaciones, lee el nombre real desde los ZIP existentes y usa el cliente OAuth oficial de Lithica Cloud Sync.
 
 ## Compatibilidad
 
@@ -23,7 +23,7 @@ La versión 2.0.1 detecta proyectos de ambas aplicaciones, muestra el nombre rea
 
 ## Instalación
 
-1. Descarga Lithica Cloud Sync-2.0.1.zip desde la sección Releases del repositorio.
+1. Descarga Lithica Cloud Sync-2.0.3.zip desde la sección Releases del repositorio.
 2. Abre QGIS.
 3. Ve a Complementos y luego a Administrar e instalar complementos.
 4. Selecciona Instalar a partir de ZIP.

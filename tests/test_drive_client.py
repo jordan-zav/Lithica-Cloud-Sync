@@ -1,7 +1,8 @@
 import io
 import json
+import zipfile
 
-from lithica_drive_sync.drive_client import DriveClient
+from lithica_drive_sync.drive_client import DriveClient, _manifest_from_zip_prefix
 
 
 class FakeResponse:
@@ -76,3 +77,17 @@ def test_lists_only_lithica_zip_files():
     assert [item.source_product for item in files] == ["mapper", "explorer"]
     assert [item.project_name for item in files] == ["Regional Map", "Project One"]
     assert all("upload" not in url for url in calls)
+
+
+def test_reads_project_name_from_existing_zip_prefix():
+    payload = io.BytesIO()
+    with zipfile.ZipFile(payload, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "manifest.json",
+            json.dumps({"projectName": "Existing Mapper Project"}),
+        )
+        archive.writestr("map.gpkg", b"content")
+
+    manifest = _manifest_from_zip_prefix(payload.getvalue())
+
+    assert manifest["projectName"] == "Existing Mapper Project"

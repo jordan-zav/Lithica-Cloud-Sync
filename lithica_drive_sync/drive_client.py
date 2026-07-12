@@ -1,7 +1,9 @@
 import json
+import struct
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from datetime import datetime
 from pathlib import Path
 
@@ -44,6 +46,13 @@ class DriveClient:
                     name = str(row.get("name", ""))
                     if not name.startswith(PROJECT_PREFIX) or not name.endswith(".zip"):
                         continue
+                    project_name = (row.get("appProperties") or {}).get(
+                        "projectName"
+                    )
+                    if not project_name:
+                        project_name = self._read_manifest_name(
+                            access_token, str(row["id"])
+                        )
                     result.append(
                         ProjectFile(
                             id=str(row["id"]),
@@ -54,12 +63,29 @@ class DriveClient:
                             size=int(row.get("size", 0)),
                             md5_checksum=row.get("md5Checksum"),
                             source_product=product,
-                            project_name=(row.get("appProperties") or {}).get(
-                                "projectName"
-                            ),
+                            project_name=project_name,
                         )
                     )
         return sorted(result, key=lambda item: item.modified_time, reverse=True)
+
+    def _read_manifest_name(self, access_token: str, file_id: str) -> str | None:
+        url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media"
+        request = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Range": "bytes=0-131071",
+            },
+            method="GET",
+        )
+        try:
+            with self._opener(request, timeout=self._timeout) as response:
+                payload = response.read(131072)
+            manifest = _manifest_from_zip_prefix(payload)
+            name = str(manifest.get("projectName", "")).strip()
+            return name or None
+        except (OSError, ValueError, KeyError, struct.error, urllib.error.HTTPError):
+            return None
 
     def download(self, access_token: str, file: ProjectFile, target: Path) -> Path:
         url = f"https://www.googleapis.com/drive/v3/files/{file.id}?alt=media"
@@ -103,3 +129,31 @@ class DriveClient:
             page_token = payload.get("nextPageToken")
             if not page_token:
                 return rows
+
+
+def _manifest_from_zip_prefix(payload: bytes) -> dict:
+    offset = 0
+    while offset + 30 <= len(payload):
+        header = struct.unpack_from("<IHHHHHIIIHH", payload, offset)
+        signature, flags, compression = header[0], header[2], header[3]
+        compressed_size, name_length, extra_length = header[7], header[9], header[10]
+        if signature != 0x04034B50 or flags & 0x01 or flags & 0x08:
+            break
+        name_start = offset + 30
+        data_start = name_start + name_length + extra_length
+        data_end = data_start + compressed_size
+        if data_end > len(payload):
+            break
+        encoding = "utf-8" if flags & 0x800 else "cp437"
+        name = payload[name_start : name_start + name_length].decode(encoding)
+        if name == "manifest.json":
+            compressed = payload[data_start:data_end]
+            if compression == 0:
+                raw = compressed
+            elif compression == 8:
+                raw = zlib.decompress(compressed, -zlib.MAX_WBITS)
+            else:
+                raise ValueError("Unsupported manifest compression")
+            return json.loads(raw.decode("utf-8"))
+        offset = data_end
+    raise ValueError("manifest.json is not available in the ZIP prefix")

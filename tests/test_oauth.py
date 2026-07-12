@@ -34,7 +34,7 @@ def test_callback_returns_code_for_matching_state():
     assert parse_callback("/callback?code=abc&state=expected", "expected") == "abc"
 
 
-def test_authorization_url_uses_only_drive_file_scope():
+def test_authorization_url_uses_readonly_drive_scope():
     url = build_authorization_url(
         OAuthConfig("client-id", "project-id"),
         "http://127.0.0.1:1234/callback",
@@ -42,8 +42,8 @@ def test_authorization_url_uses_only_drive_file_scope():
         "challenge",
     )
 
-    assert "drive.file" in url
-    assert "drive.readonly" not in url
+    assert "drive.readonly" in url
+    assert "drive.file" not in url
 
 
 def test_code_exchange_sends_desktop_client_secret():

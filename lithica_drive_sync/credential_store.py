@@ -2,6 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+from .config import DRIVE_FILE_SCOPE
 from .oauth import TokenSet
 
 
@@ -53,6 +54,8 @@ class QgisCredentialStore(CredentialStore):
             return self._memory.load()
         try:
             payload = json.loads(config.config("password"))
+            if payload.get("scope") != DRIVE_FILE_SCOPE:
+                return None
             return TokenSet(
                 access_token=payload["access_token"],
                 refresh_token=payload.get("refresh_token"),
@@ -70,6 +73,7 @@ class QgisCredentialStore(CredentialStore):
                 "access_token": token.access_token,
                 "refresh_token": token.refresh_token,
                 "expires_at": token.expires_at.isoformat(),
+                "scope": DRIVE_FILE_SCOPE,
             }
         )
         config = self._config_type()
