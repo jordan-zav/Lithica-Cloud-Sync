@@ -1,4 +1,11 @@
-# ⚖️ Licencia / License (Dual Licensing)
+# Lithica Cloud Sync para QGIS
+
+Lithica Cloud Sync conecta QGIS con los proyectos sincronizados por Lithica Explorer y Lithica Mapper en Google Drive.
+
+La versión 2.0.3 detecta proyectos de ambas aplicaciones, lee el nombre real desde los ZIP existentes y usa el cliente OAuth oficial de Lithica Cloud Sync.
+
+
+## ⚖️ Licencia (Licencia Dual)
 
 Este proyecto se distribuye bajo un modelo de **Licencia Dual**:
 
@@ -8,11 +15,6 @@ Este proyecto se distribuye bajo un modelo de **Licencia Dual**:
 Para más detalles, consulta el archivo [LICENSE](LICENSE).
 
 ---
-# Lithica Cloud Sync para QGIS
-
-Lithica Cloud Sync conecta QGIS con los proyectos sincronizados por Lithica Explorer y Lithica Mapper en Google Drive.
-
-La versión 2.0.3 detecta proyectos de ambas aplicaciones, lee el nombre real desde los ZIP existentes y usa el cliente OAuth oficial de Lithica Cloud Sync.
 
 ## Compatibilidad
 
@@ -62,4 +64,4 @@ Para consultas o errores, utiliza el [seguimiento de incidencias](https://github
 
 ## Licencia
 
-Este proyecto está sujeto a los términos de la licencia GNU GPLv3 y el acuerdo de Licencia Dual descrito al inicio de este documento. Ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está sujeto a los términos de la licencia GNU GPLv3 y el acuerdo de Licencia Dual descrito anteriormente. Ver el archivo [LICENSE](LICENSE) para más detalles.
