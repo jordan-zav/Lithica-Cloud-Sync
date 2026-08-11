@@ -1,20 +1,23 @@
 $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$workspaceRoot = Split-Path -Parent $scriptRoot
+$workspaceRoot = $scriptRoot
+$buildsRoot = if ($env:LITHICA_BUILDS_ROOT) { [System.IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\') } else { 'D:\LithicaBuilds' }
 $source = Join-Path $scriptRoot "lithica_drive_sync"
-$artifacts = Join-Path $workspaceRoot "artifacts"
-$stagingRoot = Join-Path $artifacts "_qgis_plugin_staging"
+$artifacts = Join-Path $scriptRoot "artifacts"
+$cloudSyncBuildRoot = Join-Path $buildsRoot 'CloudSync'
+$stagingRoot = Join-Path $cloudSyncBuildRoot "qgis_plugin_staging"
 $stagingPlugin = Join-Path $stagingRoot "lithica_drive_sync"
 $target = Join-Path $artifacts "Lithica Cloud Sync-2.0.3.zip"
-$temporaryTarget = Join-Path $artifacts ("Lithica Cloud Sync-" + [guid]::NewGuid().ToString("N") + ".tmp.zip")
+$temporaryTarget = Join-Path $cloudSyncBuildRoot ("Lithica Cloud Sync-" + [guid]::NewGuid().ToString("N") + ".tmp.zip")
 
-$resolvedWorkspace = [System.IO.Path]::GetFullPath($workspaceRoot)
+$resolvedBuildRoot = [System.IO.Path]::GetFullPath($cloudSyncBuildRoot).TrimEnd('\')
 $resolvedStaging = [System.IO.Path]::GetFullPath($stagingRoot)
-if (-not $resolvedStaging.StartsWith($resolvedWorkspace, [System.StringComparison]::OrdinalIgnoreCase)) {
-    throw "Staging path is outside the workspace."
+if (-not $resolvedStaging.StartsWith("$resolvedBuildRoot\", [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "Staging path is outside the Lithica build root."
 }
 
+New-Item -ItemType Directory -Path $artifacts, $cloudSyncBuildRoot -Force | Out-Null
 if (Test-Path -LiteralPath $stagingRoot) {
     Remove-Item -LiteralPath $stagingRoot -Recurse -Force
 }
