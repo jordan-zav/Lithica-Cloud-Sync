@@ -1,5 +1,26 @@
 **/__pycache__/*
 **/.pytest_cache/*
+.ruff_cache/
+.venv/
+artifacts/
+.env
+.env.*
 *oauth*.json
 client_secret_*.json
 credentials*.json
+
+# Python and QGIS plugin build state
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+*.log
+*.tmp
+*.bak
+*.old
+Thumbs.db
+.DS_Store
