@@ -102,12 +102,24 @@ function Find-VisualStudio {
 }
 function Find-Qgis {
     if ($env:QGIS_BIN -and (Test-Path -LiteralPath $env:QGIS_BIN)) { return $env:QGIS_BIN }
-    $command = Get-Command qgis-bin.exe -ErrorAction SilentlyContinue
-    if ($command) { return $command.Source }
+    foreach ($commandName in @('qgis-bin.exe','qgis-ltr-bin.exe','qgis.exe')) {
+        $command = Get-Command $commandName -ErrorAction SilentlyContinue
+        if ($command) { return $command.Source }
+    }
     $programFiles = [Environment]::GetFolderPath('ProgramFiles')
-    $found = Get-ChildItem -Path (Join-Path $programFiles 'QGIS *\bin\qgis-bin.exe') -File -ErrorAction SilentlyContinue |
-        Sort-Object FullName -Descending | Select-Object -First 1
-    if ($found) { return $found.FullName }
+    $patterns = @(
+        (Join-Path $programFiles 'QGIS *\bin\qgis-bin.exe'),
+        (Join-Path $programFiles 'QGIS *\bin\qgis-ltr-bin.exe')
+    )
+    foreach ($drive in Get-PSDrive -PSProvider FileSystem) {
+        $patterns += Join-Path $drive.Root 'QGIS\bin\qgis-bin.exe'
+        $patterns += Join-Path $drive.Root 'QGIS\bin\qgis-ltr-bin.exe'
+    }
+    foreach ($pattern in $patterns) {
+        $found = Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending | Select-Object -First 1
+        if ($found) { return $found.FullName }
+    }
     return $null
 }
 Add-Status 'OK' "Repo: $ProjectRoot"
