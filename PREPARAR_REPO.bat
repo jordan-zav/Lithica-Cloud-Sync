@@ -6,7 +6,7 @@ if not defined LITHICA_BUILDS_ROOT set "LITHICA_BUILDS_ROOT=D:\LithicaBuilds"
 set "CHECK_ARG="
 if /i "%~1"=="--check-only" set "CHECK_ARG=-CheckOnly"
 echo Preparando CloudSync...
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_REPO.ps1" -Product "CloudSync" -ProjectRoot "%~dp0." -TargetSet "QGIS" %CHECK_ARG%
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_REPO.ps1" -Product "CloudSync" -ProjectRoot "%~dp0." -TargetSet "None" %CHECK_ARG%
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.
 echo Reporte: %LITHICA_BUILDS_ROOT%\CloudSync\logs\prepare-repo-last.txt
