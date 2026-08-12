@@ -65,7 +65,7 @@ if not exist "%LITHICA_PRODUCT_ROOT%" (
   call :error "No se pudo crear %LITHICA_PRODUCT_ROOT%."
   goto menu
 )
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-environment.ps1" -Product "%LITHICA_PRODUCT_KEY%" -Target "%LITHICA_DEFAULT_TARGET%" -ProjectRoot "%~dp0"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-environment.ps1" -Product "%LITHICA_PRODUCT_KEY%" -Target "%LITHICA_DEFAULT_TARGET%" -ProjectRoot "%~dp0."
 if errorlevel 1 (
   call :error "Diagnostico fallido. Revisa %LITHICA_LOG_ROOT%\environment-last.txt."
   pause
@@ -98,7 +98,7 @@ set "LITHICA_PREFLIGHT_TARGET=%LITHICA_DEFAULT_TARGET%"
 echo %~1 | findstr /i "APK AAB Android" >nul && set "LITHICA_PREFLIGHT_TARGET=Android"
 echo %~1 | findstr /i "Windows" >nul && set "LITHICA_PREFLIGHT_TARGET=Windows"
 echo %~1 | findstr /i "QGIS ZIP" >nul && set "LITHICA_PREFLIGHT_TARGET=QGIS"
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-environment.ps1" -Product "%LITHICA_PRODUCT_KEY%" -Target "%LITHICA_PREFLIGHT_TARGET%" -ProjectRoot "%~dp0"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-environment.ps1" -Product "%LITHICA_PRODUCT_KEY%" -Target "%LITHICA_PREFLIGHT_TARGET%" -ProjectRoot "%~dp0."
 if errorlevel 1 (
   call :error "El entorno no esta listo. Revisa environment-last.txt y el mensaje anterior."
   call :workflow_end 1
