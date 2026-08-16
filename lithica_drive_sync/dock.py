@@ -15,7 +15,7 @@
 
 from pathlib import Path
 
-from qgis.PyQt.QtCore import QLocale, Qt
+from qgis.PyQt.QtCore import QLocale, QTimer, Qt
 from qgis.PyQt.QtGui import QPixmap
 from qgis.PyQt.QtWidgets import (
     QComboBox,
@@ -25,6 +25,7 @@ from qgis.PyQt.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -32,6 +33,7 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import QgsApplication, QgsTask
 
 from .cache import ProjectCache
+from .catalog import ProjectCatalog, display_name
 from .config import load_oauth_config
 from .credential_store import QgisCredentialStore
 from .drive_client import DriveClient
@@ -106,6 +108,8 @@ class LithicaDriveDock(QDockWidget):
         self.cache = ProjectCache(cache_root)
         self.sync = SyncService(self.drive, self.cache)
         self.projects = []
+        self.catalog = ProjectCatalog()
+        self._is_connected = False
         self._build_ui()
         self._update_connection()
 
@@ -148,6 +152,11 @@ class LithicaDriveDock(QDockWidget):
         self.refresh_button = QPushButton(self.tr.text("refresh"))
         layout_projects.addWidget(self.refresh_button)
 
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText(self.tr.text("search_placeholder"))
+        self.search_input.setClearButtonEnabled(True)
+        layout_projects.addWidget(self.search_input)
+
         self.project_combo = QComboBox()
         self.project_combo.setMinimumHeight(28)
         layout_projects.addWidget(self.project_combo)
@@ -174,9 +183,15 @@ class LithicaDriveDock(QDockWidget):
 
         self.setWidget(body)
 
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(150)
+        self._search_timer.timeout.connect(self._apply_project_filter)
+
         self.connect_button.clicked.connect(self.connect_drive)
         self.disconnect_button.clicked.connect(self.disconnect_drive)
         self.refresh_button.clicked.connect(self.refresh_projects)
+        self.search_input.textChanged.connect(self._queue_project_filter)
         self.download_button.clicked.connect(self.download_selected)
         self.clear_button.clicked.connect(self.clear_cache)
         self.about_button.clicked.connect(self.show_about_dialog)
@@ -195,12 +210,15 @@ class LithicaDriveDock(QDockWidget):
 
     def _update_connection(self):
         connected = self.credentials.load() is not None
+        self._is_connected = connected
         self.status.setText(
             self.tr.text("connected") if connected else self.tr.text("disconnected")
         )
         self.disconnect_button.setEnabled(connected)
         self.refresh_button.setEnabled(connected)
-        self.download_button.setEnabled(connected and bool(self.projects))
+        self.download_button.setEnabled(
+            connected and self.project_combo.currentData() is not None
+        )
 
     def _oauth_config(self):
         return load_oauth_config(self.plugin_dir / "oauth_client.json")
@@ -252,6 +270,9 @@ class LithicaDriveDock(QDockWidget):
     def disconnect_drive(self):
         self.credentials.clear()
         self.projects = []
+        self.catalog.clear()
+        self._search_timer.stop()
+        self.search_input.clear()
         self.project_combo.clear()
         self._update_connection()
 
@@ -263,22 +284,46 @@ class LithicaDriveDock(QDockWidget):
         )
 
     def _projects_loaded(self, projects):
-        self.projects = projects
-        self.project_combo.clear()
-        for project in projects:
-            label = f"{project.name} — {project.modified_time:%Y-%m-%d %H:%M}"
-            product = "Mapper" if project.source_product == "mapper" else "Explorer"
-            project_name = project.project_name or project.name
-            label = f"[{product}] {project_name} - {project.modified_time:%Y-%m-%d %H:%M}"
-            self.project_combo.addItem(label)
-        if not projects:
+        self.projects = list(projects)
+        self.catalog.replace(self.projects)
+        self._apply_project_filter()
+        if not self.projects:
             self.status.setText(self.tr.text("no_projects"))
 
+    def _queue_project_filter(self, _text):
+        self._search_timer.start()
+
+    def _apply_project_filter(self):
+        selected = self.project_combo.currentData()
+        selected_id = selected.id if selected is not None else None
+        projects = self.catalog.search(self.search_input.text())
+
+        self.project_combo.setUpdatesEnabled(False)
+        try:
+            self.project_combo.clear()
+            selected_index = -1
+            for index, project in enumerate(projects):
+                product = (
+                    "Mapper" if project.source_product == "mapper" else "Explorer"
+                )
+                label = (
+                    f"[{product}] {display_name(project)} - "
+                    f"{project.modified_time:%Y-%m-%d %H:%M}"
+                )
+                self.project_combo.addItem(label, project)
+                if project.id == selected_id:
+                    selected_index = index
+            if selected_index >= 0:
+                self.project_combo.setCurrentIndex(selected_index)
+        finally:
+            self.project_combo.setUpdatesEnabled(True)
+
+        self.download_button.setEnabled(self._is_connected and bool(projects))
+
     def download_selected(self):
-        index = self.project_combo.currentIndex()
-        if index < 0 or index >= len(self.projects):
+        remote = self.project_combo.currentData()
+        if remote is None:
             return
-        remote = self.projects[index]
         self._run_task(
             self.tr.text("task_download"),
             lambda: self.sync.download_project(self._active_token(), remote),

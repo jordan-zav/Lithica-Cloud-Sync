@@ -9,7 +9,16 @@ $artifacts = Join-Path $releasesRoot "CloudSync\qgis"
 $cloudSyncBuildRoot = Join-Path $buildsRoot 'CloudSync'
 $stagingRoot = Join-Path $cloudSyncBuildRoot "qgis_plugin_staging"
 $stagingPlugin = Join-Path $stagingRoot "lithica_drive_sync"
-$target = Join-Path $artifacts "Lithica Cloud Sync-2.0.3.zip"
+$metadataPath = Join-Path $source "metadata.txt"
+$metadataVersionMatch = Select-String -LiteralPath $metadataPath -Pattern '^version=(.+)$'
+if (-not $metadataVersionMatch -or $metadataVersionMatch.Matches.Count -ne 1) {
+    throw "metadata.txt must contain exactly one version entry."
+}
+$pluginVersion = $metadataVersionMatch.Matches[0].Groups[1].Value.Trim()
+if ($pluginVersion -notmatch '^\d+\.\d+\.\d+$') {
+    throw "Invalid plugin version in metadata.txt: $pluginVersion"
+}
+$target = Join-Path $artifacts "Lithica Cloud Sync-$pluginVersion.zip"
 $temporaryTarget = Join-Path $cloudSyncBuildRoot ("Lithica Cloud Sync-" + [guid]::NewGuid().ToString("N") + ".tmp.zip")
 
 $resolvedBuildRoot = [System.IO.Path]::GetFullPath($cloudSyncBuildRoot).TrimEnd('\')
@@ -40,9 +49,18 @@ Get-ChildItem -LiteralPath $source -Recurse -File |
     }
 
 $licenseSource = Join-Path $scriptRoot "LICENSE"
-if (Test-Path -LiteralPath $licenseSource) {
-    Copy-Item -LiteralPath $licenseSource -Destination (Join-Path $stagingPlugin "LICENSE")
+if (-not (Test-Path -LiteralPath $licenseSource)) {
+    throw "The required LICENSE file was not found."
 }
+$licenseText = Get-Content -LiteralPath $licenseSource -Raw
+if (
+    $licenseText -notmatch 'GNU GENERAL PUBLIC LICENSE' -or
+    $licenseText -notmatch 'Version 3, 29 June 2007' -or
+    $licenseText -notmatch 'END OF TERMS AND CONDITIONS'
+) {
+    throw "LICENSE must contain the complete GNU GPL version 3 text."
+}
+Copy-Item -LiteralPath $licenseSource -Destination (Join-Path $stagingPlugin "LICENSE")
 
 $dangerPatterns = @(
     "-----BEGIN PRIVATE KEY-----",

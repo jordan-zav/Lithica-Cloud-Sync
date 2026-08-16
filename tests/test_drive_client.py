@@ -1,8 +1,7 @@
-import io
 import json
-import zipfile
+import urllib.parse
 
-from lithica_drive_sync.drive_client import DriveClient, _manifest_from_zip_prefix
+from lithica_drive_sync.drive_client import DriveClient
 
 
 class FakeResponse:
@@ -26,7 +25,14 @@ def test_lists_only_lithica_zip_files():
     responses = iter(
         [
             FakeResponse(
-                json.dumps({"files": [{"id": "folder"}]}).encode()
+                json.dumps(
+                    {
+                        "files": [
+                            {"id": "explorer-folder", "name": "Lithica Explorer"},
+                            {"id": "mapper-folder", "name": "Lithica Mapper"},
+                        ]
+                    }
+                ).encode()
             ),
             FakeResponse(
                 json.dumps(
@@ -38,25 +44,25 @@ def test_lists_only_lithica_zip_files():
                                 "modifiedTime": "2026-06-27T10:00:00Z",
                                 "size": "10",
                                 "md5Checksum": "abc",
+                                "parents": ["explorer-folder"],
                                 "appProperties": {"projectName": "Project One"},
-                            }
-                        ]
-                    }
-                ).encode()
-            ),
-            FakeResponse(json.dumps({"files": [{"id": "mapper-folder"}]}).encode()),
-            FakeResponse(
-                json.dumps(
-                    {
-                        "files": [
+                            },
                             {
                                 "id": "f2",
                                 "name": "lithica-project-m1.zip",
                                 "modifiedTime": "2026-06-28T10:00:00Z",
                                 "size": "20",
                                 "md5Checksum": "def",
+                                "parents": ["mapper-folder"],
                                 "appProperties": {"projectName": "Regional Map"},
-                            }
+                            },
+                            {
+                                "id": "f3",
+                                "name": "lithica-project-legacy.zip",
+                                "modifiedTime": "2026-06-26T10:00:00Z",
+                                "size": "30",
+                                "parents": ["explorer-folder"],
+                            },
                         ]
                     }
                 ).encode()
@@ -73,21 +79,29 @@ def test_lists_only_lithica_zip_files():
     assert [item.name for item in files] == [
         "lithica-project-m1.zip",
         "lithica-project-p1.zip",
+        "lithica-project-legacy.zip",
     ]
-    assert [item.source_product for item in files] == ["mapper", "explorer"]
-    assert [item.project_name for item in files] == ["Regional Map", "Project One"]
+    assert [item.source_product for item in files] == [
+        "mapper",
+        "explorer",
+        "explorer",
+    ]
+    assert [item.project_name for item in files] == [
+        "Regional Map",
+        "Project One",
+        None,
+    ]
+    assert len(calls) == 2
     assert all("upload" not in url for url in calls)
+    assert all("alt=media" not in url for url in calls)
 
-
-def test_reads_project_name_from_existing_zip_prefix():
-    payload = io.BytesIO()
-    with zipfile.ZipFile(payload, "w", zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr(
-            "manifest.json",
-            json.dumps({"projectName": "Existing Mapper Project"}),
-        )
-        archive.writestr("map.gpkg", b"content")
-
-    manifest = _manifest_from_zip_prefix(payload.getvalue())
-
-    assert manifest["projectName"] == "Existing Mapper Project"
+    folder_query = urllib.parse.parse_qs(
+        urllib.parse.urlparse(calls[0]).query
+    )["q"][0]
+    file_query = urllib.parse.parse_qs(
+        urllib.parse.urlparse(calls[1]).query
+    )["q"][0]
+    assert "Lithica Explorer" in folder_query
+    assert "Lithica Mapper" in folder_query
+    assert "'explorer-folder' in parents" in file_query
+    assert "'mapper-folder' in parents" in file_query
