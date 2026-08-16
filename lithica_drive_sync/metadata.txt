@@ -6,6 +6,7 @@ about=Lithica Cloud Sync bridges Lithica Explorer and Lithica Mapper projects st
  Key features:
  - Direct connection to Google Drive using secure OAuth 2.0.
  - Automatic detection of Lithica Explorer and Lithica Mapper project backups.
+ - Batched Google Drive inventory with fast, network-free local search.
  - One-click download and extraction of project ZIP archives.
  - Instant loading of all layers and tables within the project's GeoPackage, preserving field data structure.
  
@@ -18,12 +19,13 @@ about=Lithica Cloud Sync bridges Lithica Explorer and Lithica Mapper projects st
  Características principales:
  - Conexión directa a Google Drive mediante OAuth 2.0 seguro.
  - Detección automática de copias de seguridad de proyectos de Lithica Explorer.
+ - Inventario agrupado de Google Drive con búsqueda local rápida y sin solicitudes de red.
  - Descarga y extracción de archivos ZIP del proyecto con un solo clic.
  - Carga instantánea de todas las capas y tablas del GeoPackage del proyecto, conservando la estructura de datos del campo.
  
  Diseñado para geólogos y mapeadores de campo para visualizar al instante datos estructurales, observaciones y elementos multimedia recolectados con la app móvil Lithica Explorer.
 icon=app_logo_no_name.png
-version=2.0.3
+version=2.0.4
 qgisMinimumVersion=3.34
 author=Jordan Zavaleta
 email=jordanzav@gisgeo.dev

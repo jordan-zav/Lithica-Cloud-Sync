@@ -2,17 +2,14 @@
 
 Lithica Cloud Sync conecta QGIS con los proyectos sincronizados por Lithica Explorer y Lithica Mapper en Google Drive.
 
-La versión 2.0.3 detecta proyectos de ambas aplicaciones, lee el nombre real desde los ZIP existentes y usa el cliente OAuth oficial de Lithica Cloud Sync.
+La versión 2.0.4 detecta proyectos de ambas aplicaciones, crea un inventario eficiente con los metadatos de Google Drive y permite buscar localmente sin hacer solicitudes por cada proyecto o pulsación.
 
 
-## ⚖️ Licencia (Licencia Dual)
+## ⚖️ Licencia
 
-Este proyecto se distribuye bajo un modelo de **Licencia Dual**:
+A partir de la versión 2.0.4, este proyecto se distribuye exclusivamente bajo la **GNU General Public License versión 3 o posterior** (`GPL-3.0-or-later`). Puedes usarlo, estudiarlo, modificarlo y distribuirlo, incluso con fines comerciales, respetando los términos de la GPL.
 
-1. **Uso de Código Abierto (GNU GPLv3):** Puedes usar, estudiar, modificar y redistribuir este software de forma gratuita, siempre y cuando cualquier versión modificada o distribución derivada también sea 100% de código abierto bajo la licencia GNU GPLv3.
-2. **Uso Comercial / Privado (Licencia Comercial):** Si deseas integrar este código en software propietario, cerrado o comercial (sin la obligación de abrir tu propio código fuente bajo la GPLv3), debes adquirir una licencia comercial exclusiva. Por favor, ponte en contacto con el autor para acordar los términos.
-
-Para más detalles, consulta el archivo [LICENSE](LICENSE).
+Consulta el texto completo en [LICENSE](LICENSE). Las versiones anteriores conservan la licencia bajo la cual fueron publicadas.
 
 ---
 
@@ -28,6 +25,7 @@ Para más detalles, consulta el archivo [LICENSE](LICENSE).
 - Conexión segura con Google Drive usando el permiso limitado drive.file.
 - Detección de las carpetas Lithica Explorer y Lithica Mapper en Mi unidad.
 - Identificación visible del producto de origen en la lista de proyectos.
+- Inventario agrupado de Drive y búsqueda local rápida, tolerante a mayúsculas y tildes.
 - Descarga y validación segura de los archivos ZIP.
 - Apertura automática de todas las capas disponibles en el GeoPackage.
 - Grupos separados para Explorer y Mapper dentro del árbol de capas de QGIS.
@@ -35,7 +33,7 @@ Para más detalles, consulta el archivo [LICENSE](LICENSE).
 
 ## Instalación
 
-1. Descarga Lithica Cloud Sync-2.0.3.zip desde la sección Releases del repositorio.
+1. Descarga Lithica Cloud Sync-2.0.4.zip desde la sección Releases del repositorio.
 2. Abre QGIS.
 3. Ve a Complementos y luego a Administrar e instalar complementos.
 4. Selecciona Instalar a partir de ZIP.
@@ -46,9 +44,10 @@ Para más detalles, consulta el archivo [LICENSE](LICENSE).
 
 1. Pulsa Conectar y autoriza tu cuenta de Google Drive.
 2. Pulsa Actualizar lista.
-3. Selecciona un proyecto identificado como Explorer o Mapper.
-4. Pulsa Descargar y abrir.
-5. Las capas aparecerán bajo el grupo correspondiente en QGIS.
+3. Escribe en el buscador para filtrar localmente el inventario, si lo necesitas.
+4. Selecciona un proyecto identificado como Explorer o Mapper.
+5. Pulsa Descargar y abrir.
+6. Las capas aparecerán bajo el grupo correspondiente en QGIS.
 
 ## Seguridad
 
@@ -61,7 +60,3 @@ Los archivos descargados se validan antes de extraerse. Se rechazan rutas insegu
 Desarrollado por [GisGeo Dev](https://gisgeo.dev).
 
 Para consultas o errores, utiliza el [seguimiento de incidencias](https://github.com/jordan-zav/lithica-cloud-sync/issues).
-
-## Licencia
-
-Este proyecto está sujeto a los términos de la licencia GNU GPLv3 y el acuerdo de Licencia Dual descrito anteriormente. Ver el archivo [LICENSE](LICENSE) para más detalles.
