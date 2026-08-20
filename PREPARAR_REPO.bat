@@ -5,8 +5,10 @@ title Preparar repo - CloudSync
 if not defined LITHICA_BUILDS_ROOT set "LITHICA_BUILDS_ROOT=D:\LithicaBuilds"
 set "CHECK_ARG="
 if /i "%~1"=="--check-only" set "CHECK_ARG=-CheckOnly"
+set "TARGET_SET=None"
+if defined LITHICA_PREPARE_TARGETS set "TARGET_SET=%LITHICA_PREPARE_TARGETS%"
 echo Preparando CloudSync...
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_REPO.ps1" -Product "CloudSync" -ProjectRoot "%~dp0." -TargetSet "None" %CHECK_ARG%
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_REPO.ps1" -Product "CloudSync" -ProjectRoot "%~dp0." -TargetSet "%TARGET_SET%" %CHECK_ARG%
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.
 echo Reporte: %LITHICA_BUILDS_ROOT%\CloudSync\logs\prepare-repo-last.txt
