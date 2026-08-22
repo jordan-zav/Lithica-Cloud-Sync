@@ -35,7 +35,14 @@ $qgis = if ($env:QGIS_BIN -and (Test-Path -LiteralPath $env:QGIS_BIN)) {
     if ($command) { $command.Source }
 }
 if (-not $qgis) {
-    $qgis = Get-ChildItem -Path (Join-Path $env:ProgramFiles 'QGIS *\bin\qgis-bin.exe') -File -ErrorAction SilentlyContinue |
+    $qgis = @(
+        'E:\QGIS\bin\qgis-ltr-bin.exe'
+        'E:\QGIS\bin\qgis-bin.exe'
+        (Join-Path $env:ProgramFiles 'QGIS *\bin\qgis-ltr-bin.exe')
+        (Join-Path $env:ProgramFiles 'QGIS *\bin\qgis-bin.exe')
+    ) | ForEach-Object {
+        Get-ChildItem -Path $_ -File -ErrorAction SilentlyContinue
+    } |
         Sort-Object FullName -Descending |
         Select-Object -First 1 -ExpandProperty FullName
 }
