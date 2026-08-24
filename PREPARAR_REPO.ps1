@@ -76,14 +76,13 @@ function Install-Flutter {
     return $destination
 }
 function Find-AndroidSdk {
-    foreach ($candidate in @($env:ANDROID_SDK_ROOT,$env:ANDROID_HOME,(Join-Path $env:LOCALAPPDATA 'Android\Sdk'))) {
+    foreach ($candidate in @((Join-Path $sharedRoot 'android-sdk'),$env:ANDROID_SDK_ROOT,$env:ANDROID_HOME)) {
         if ($candidate -and (Test-Path -LiteralPath $candidate -PathType Container)) { return [IO.Path]::GetFullPath($candidate) }
     }
     return $null
 }
 function Find-JavaHome {
-    $programFiles = [Environment]::GetFolderPath('ProgramFiles')
-    foreach ($candidate in @($env:JAVA_HOME,(Join-Path $programFiles 'Android\Android Studio\jbr'))) {
+    foreach ($candidate in @((Join-Path $sharedRoot 'jdk-17'),$env:JAVA_HOME)) {
         if ($candidate -and (Test-Path -LiteralPath (Join-Path $candidate 'bin\java.exe'))) { return [IO.Path]::GetFullPath($candidate) }
     }
     return $null
@@ -130,6 +129,9 @@ $envLines.Add('@echo off')
 $envLines.Add('@set "LITHICA_BUILDS_ROOT=' + $buildsRoot + '"')
 $envLines.Add('@set "PUB_CACHE=' + (Join-Path $sharedRoot 'pub-cache') + '"')
 $envLines.Add('@set "GRADLE_USER_HOME=' + (Join-Path $sharedRoot 'gradle') + '"')
+$envLines.Add('@set "ANDROID_USER_HOME=' + (Join-Path $sharedRoot 'android-user-home') + '"')
+$envLines.Add('@set "TEMP=' + (Join-Path $productRoot 'system-temp') + '"')
+$envLines.Add('@set "TMP=%TEMP%"')
 if ($Product -in @('Explorer','Mapper','GeoModeller','GeoTech','Atlas')) {
     $flutterRoot = Find-Flutter
     if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot 'pubspec.yaml'))){ Add-Status 'ERROR' 'Falta pubspec.yaml.' }

@@ -31,9 +31,20 @@ $createdPaths = @(
     $logRoot,
     $sharedRoot,
     (Join-Path $sharedRoot 'pub-cache'),
-    (Join-Path $sharedRoot 'gradle')
+    (Join-Path $sharedRoot 'gradle'),
+    (Join-Path $sharedRoot 'android-user-home')
 )
 New-Item -ItemType Directory -Force -Path $createdPaths | Out-Null
+
+$env:PUB_CACHE = Join-Path $sharedRoot 'pub-cache'
+$env:GRADLE_USER_HOME = Join-Path $sharedRoot 'gradle'
+$env:TEMP = Join-Path $productRoot 'temp'
+$env:TMP = $env:TEMP
+$env:FLUTTER_ROOT = Join-Path $sharedRoot 'flutter-sdk'
+$env:ANDROID_SDK_ROOT = Join-Path $sharedRoot 'android-sdk'
+$env:ANDROID_HOME = $env:ANDROID_SDK_ROOT
+$env:ANDROID_USER_HOME = Join-Path $sharedRoot 'android-user-home'
+$env:JAVA_HOME = Join-Path $sharedRoot 'jdk-17'
 
 $messages = [System.Collections.Generic.List[string]]::new()
 function Add-Result {
@@ -88,14 +99,8 @@ if ($Product -eq 'CloudSync') {
     Add-Result -Status 'OK' -Message "Flutter: $flutterRoot"
 
     if ($Target -eq 'Android') {
-        $androidSdk = if ($env:ANDROID_SDK_ROOT -and (Test-Path -LiteralPath $env:ANDROID_SDK_ROOT)) {
-            $env:ANDROID_SDK_ROOT
-        } elseif ($env:ANDROID_HOME -and (Test-Path -LiteralPath $env:ANDROID_HOME)) {
-            $env:ANDROID_HOME
-        } else {
-            $localSdk = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
-            if (Test-Path -LiteralPath $localSdk) { $localSdk }
-        }
+        $androidSdk = Join-Path $sharedRoot 'android-sdk'
+        if (-not (Test-Path -LiteralPath $androidSdk -PathType Container)) { $androidSdk = $null }
         if (-not $androidSdk) {
             Stop-Preparation 'No se encontro Android SDK. Instale Android Studio o configure ANDROID_SDK_ROOT.'
         }
