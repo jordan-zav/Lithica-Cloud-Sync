@@ -2,7 +2,8 @@
 setlocal EnableExtensions
 chcp 65001 >nul
 title Preparar repo - CloudSync
-if not defined LITHICA_BUILDS_ROOT set "LITHICA_BUILDS_ROOT=D:\LithicaBuilds"
+if not defined DEV_RESOURCES_ROOT set "DEV_RESOURCES_ROOT=D:\DevResources"
+if not defined LITHICA_BUILDS_ROOT set "LITHICA_BUILDS_ROOT=%DEV_RESOURCES_ROOT%"
 set "CHECK_ARG="
 if /i "%~1"=="--check-only" set "CHECK_ARG=-CheckOnly"
 set "TARGET_SET=None"

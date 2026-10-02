@@ -1,8 +1,14 @@
+
+# Serialize mutable workspaces; nested tasks inherit the owning session.
+if ($env:DEV_RESOURCE_PROJECT -ne 'CloudSync' -and -not ($PSBoundParameters.ContainsKey('ValidateOnly') -and $PSBoundParameters['ValidateOnly'])) {
+    & (Join-Path $PSScriptRoot '.build-support\Invoke-ResourceTask.ps1') -Product 'CloudSync' -ScriptPath $PSCommandPath -ScriptParameters $PSBoundParameters -ExtraArguments $args
+    return
+}
 $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = $scriptRoot
-$buildsRoot = if ($env:LITHICA_BUILDS_ROOT) { [System.IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\') } else { 'D:\LithicaBuilds' }
+$buildsRoot = if ($env:LITHICA_BUILDS_ROOT) { [System.IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\') } elseif ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } elseif ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } else { 'D:/DevResources' }
 $source = Join-Path $scriptRoot "lithica_drive_sync"
 $releasesRoot = if ($env:LITHICA_RELEASES_ROOT) { [System.IO.Path]::GetFullPath($env:LITHICA_RELEASES_ROOT).TrimEnd('\') } else { Join-Path $buildsRoot 'Releases' }
 $artifacts = Join-Path $releasesRoot "CloudSync\qgis"

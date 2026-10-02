@@ -13,9 +13,7 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot).TrimEnd('\')
 $buildsRoot = if ($env:LITHICA_BUILDS_ROOT) {
     [System.IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\')
-} else {
-    'D:\LithicaBuilds'
-}
+} elseif ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } else { 'D:/DevResources' }
 $driveRoot = [System.IO.Path]::GetPathRoot($buildsRoot)
 if (-not (Test-Path -LiteralPath $driveRoot)) {
     throw "No existe la unidad de temporales $driveRoot. Configure LITHICA_BUILDS_ROOT en una unidad local."
@@ -39,7 +37,9 @@ New-Item -ItemType Directory -Force -Path $createdPaths | Out-Null
 $env:PUB_CACHE = Join-Path $sharedRoot 'pub-cache'
 $env:GRADLE_USER_HOME = Join-Path $sharedRoot 'gradle'
 $env:TEMP = Join-Path $productRoot 'temp'
+if ($env:DEV_RESOURCE_SESSION_TEMP) { $env:TEMP = $env:DEV_RESOURCE_SESSION_TEMP }
 $env:TMP = $env:TEMP
+if ($env:DEV_RESOURCE_SESSION_TEMP) { $env:TMP = $env:DEV_RESOURCE_SESSION_TEMP }
 $env:FLUTTER_ROOT = Join-Path $sharedRoot 'flutter-sdk'
 $env:ANDROID_SDK_ROOT = Join-Path $sharedRoot 'android-sdk'
 $env:ANDROID_HOME = $env:ANDROID_SDK_ROOT

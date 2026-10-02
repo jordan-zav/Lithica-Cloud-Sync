@@ -7,10 +7,16 @@ param(
     [string]$TargetSet = 'None',
     [switch]$CheckOnly
 )
+# Serialize mutable workspaces; nested tasks inherit the owning session.
+if ($env:DEV_RESOURCE_PROJECT -ne 'CloudSync' -and -not ($PSBoundParameters.ContainsKey('ValidateOnly') -and $PSBoundParameters['ValidateOnly'])) {
+    & (Join-Path $PSScriptRoot '.build-support\Invoke-ResourceTask.ps1') -Product 'CloudSync' -ScriptPath $PSCommandPath -ScriptParameters $PSBoundParameters -ExtraArguments $args -SharedSetup
+    return
+}
+
 $ErrorActionPreference = 'Stop'
 $ProjectRoot = [IO.Path]::GetFullPath($ProjectRoot).TrimEnd('\')
 $targets = @($TargetSet -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -ne 'None' })
-$buildsRoot = if ($env:LITHICA_BUILDS_ROOT) { [IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\') } else { 'D:\LithicaBuilds' }
+$buildsRoot = if ($env:LITHICA_BUILDS_ROOT) { [IO.Path]::GetFullPath($env:LITHICA_BUILDS_ROOT).TrimEnd('\') } elseif ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } elseif ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } else { 'D:/DevResources' }
 $driveRoot = [IO.Path]::GetPathRoot($buildsRoot)
 if (-not (Test-Path -LiteralPath $driveRoot -PathType Container)) { throw "No existe $driveRoot. Cree esa unidad o defina LITHICA_BUILDS_ROOT." }
 if (-not (Test-Path -LiteralPath $ProjectRoot -PathType Container)) { throw "No existe el repo: $ProjectRoot" }
@@ -131,12 +137,13 @@ $envLines.Add('@set "PUB_CACHE=' + (Join-Path $sharedRoot 'pub-cache') + '"')
 $envLines.Add('@set "GRADLE_USER_HOME=' + (Join-Path $sharedRoot 'gradle') + '"')
 $envLines.Add('@set "ANDROID_USER_HOME=' + (Join-Path $sharedRoot 'android-user-home') + '"')
 $envLines.Add('@set "TEMP=' + (Join-Path $productRoot 'system-temp') + '"')
+$envLines.Add('@if defined DEV_RESOURCE_SESSION_TEMP set "TEMP=%DEV_RESOURCE_SESSION_TEMP%"')
 $envLines.Add('@set "TMP=%TEMP%"')
 if ($Product -in @('Explorer','Mapper','GeoModeller','GeoTech','Atlas')) {
     $flutterRoot = Find-Flutter
     if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot 'pubspec.yaml'))){ Add-Status 'ERROR' 'Falta pubspec.yaml.' }
     if (-not $flutterRoot -and -not $CheckOnly) {
-        try { $flutterRoot = Install-Flutter } catch { Add-Status 'ERROR' $_.Exception.Message }
+        try { $flutterRoot = & (Join-Path $PSScriptRoot '.build-support\Invoke-SharedInstall.ps1') { $existing = Find-Flutter; if ($existing) { $existing } else { Install-Flutter } } } catch { Add-Status 'ERROR' $_.Exception.Message }
     }
     if (-not $flutterRoot) { Add-Status 'ERROR' 'No se encontro Flutter. Ejecute sin --check-only para descargarlo una sola vez.' }
 }

@@ -1,4 +1,10 @@
 @echo off
+if /i "%DEV_RESOURCE_PROJECT%"=="CloudSync" goto :dev_resource_ready
+set "DEV_RESOURCE_BATCH_ARGS=%*"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0.build-support\Invoke-ResourceTask.ps1" -Product CloudSync -BatchPath "%~f0"
+exit /b %errorlevel%
+:dev_resource_ready
+@echo off
 setlocal
 chcp 65001 >nul
 title Lithica Cloud Sync - QGIS
