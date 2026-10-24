@@ -78,7 +78,7 @@ def build_authorization_url(
             "code_challenge": challenge,
             "code_challenge_method": "S256",
             "access_type": "offline",
-            "prompt": "consent",
+            "prompt": "select_account consent",
         }
     )
     return f"{AUTH_URL}?{query}"

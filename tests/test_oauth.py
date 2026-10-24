@@ -44,6 +44,8 @@ def test_authorization_url_uses_readonly_drive_scope():
 
     assert "drive.readonly" in url
     assert "drive.file" not in url
+    parameters = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+    assert set(parameters["prompt"][0].split()) == {"select_account", "consent"}
 
 
 def test_code_exchange_sends_desktop_client_secret():
