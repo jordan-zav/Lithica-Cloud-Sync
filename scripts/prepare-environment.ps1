@@ -36,6 +36,7 @@ New-Item -ItemType Directory -Force -Path $createdPaths | Out-Null
 
 $env:PUB_CACHE = Join-Path $sharedRoot 'pub-cache'
 $env:GRADLE_USER_HOME = Join-Path $sharedRoot 'gradle'
+if (-not $env:DEV_RESOURCE_SESSION_TEMP -and $env:DEVRESOURCES_SESSION) { $env:DEV_RESOURCE_SESSION_TEMP = $env:DEVRESOURCES_SESSION }
 $env:TEMP = Join-Path $productRoot 'temp'
 if ($env:DEV_RESOURCE_SESSION_TEMP) { $env:TEMP = $env:DEV_RESOURCE_SESSION_TEMP }
 $env:TMP = $env:TEMP

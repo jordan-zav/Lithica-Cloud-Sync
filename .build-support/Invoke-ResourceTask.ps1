@@ -7,6 +7,13 @@ param(
     [switch]$SharedSetup
 )
 
+# Optional machine-local supervisor; keep paths and leases consistent across entry points.
+$localSupervisor = Join-Path (Split-Path -Parent $PSScriptRoot) '.devresources.runner.ps1'
+if ((Test-Path -LiteralPath $localSupervisor) -and -not $env:DEV_RESOURCE_PROJECT) {
+    & $localSupervisor @PSBoundParameters
+    return
+}
+
 $ErrorActionPreference = 'Stop'
 $root = if ($env:DEV_RESOURCES_ROOT) { $env:DEV_RESOURCES_ROOT } else { 'D:\DevResources' }
 $root = [IO.Path]::GetFullPath($root).TrimEnd('\')
@@ -48,7 +55,7 @@ try {
         $limit = 2
         if ($env:DEV_MAX_PARALLEL_BUILDS) {
             $limit = [int]$env:DEV_MAX_PARALLEL_BUILDS
-            if ($limit -lt 1 -or $limit -gt 16) { throw 'DEV_MAX_PARALLEL_BUILDS must be between 1 and 16.' }
+            if ($limit -lt 1 -or $limit -gt 2) { throw 'DEV_MAX_PARALLEL_BUILDS must be 1 or 2.' }
         }
         $announced = $false
         while (-not $buildLease) {

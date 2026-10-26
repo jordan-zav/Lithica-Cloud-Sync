@@ -24,7 +24,7 @@ $productRoot = Join-Path $buildsRoot $Product
 $sharedRoot = Join-Path $buildsRoot 'Shared'
 $logRoot = Join-Path $productRoot 'logs'
 $reportPath = Join-Path $logRoot 'prepare-repo-last.txt'
-$envFile = Join-Path $sharedRoot ("lithica-env-$Product.cmd")
+$envFile = Join-Path $(if ($env:DEVRESOURCES_SESSION) { $buildsRoot } else { $sharedRoot }) ("lithica-env-$Product.cmd")
 New-Item -ItemType Directory -Force -Path @(
     $productRoot,(Join-Path $productRoot 'temp'),(Join-Path $productRoot 'build'),$logRoot,
     $sharedRoot,(Join-Path $sharedRoot 'downloads'),(Join-Path $sharedRoot 'pub-cache'),(Join-Path $sharedRoot 'gradle')

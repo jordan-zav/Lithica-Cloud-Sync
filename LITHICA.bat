@@ -1,3 +1,12 @@
+@rem DevResources: configuracion local opcional; el repositorio sigue siendo portable.
+@if /I "%DEVRESOURCES_WORKSPACE%"=="%~dp0" goto devresources_ready
+@if not exist "%~dp0.devresources.local.cmd" goto devresources_ready
+@setlocal
+@set "DEVRESOURCES_ENTRY=%~f0"
+@set "DEVRESOURCES_ARGUMENTS=%*"
+@call "%~dp0.devresources.local.cmd"
+@exit /b %errorlevel%
+:devresources_ready
 @echo off
 setlocal EnableExtensions
 chcp 65001 >nul
@@ -5,7 +14,7 @@ title Lithica Cloud Sync
 
 if not defined DEV_RESOURCES_ROOT set "DEV_RESOURCES_ROOT=D:\DevResources"
 if not defined LITHICA_BUILDS_ROOT set "LITHICA_BUILDS_ROOT=%DEV_RESOURCES_ROOT%"
-if exist "%LITHICA_BUILDS_ROOT%\Shared\lithica-env-CloudSync.cmd" call "%LITHICA_BUILDS_ROOT%\Shared\lithica-env-CloudSync.cmd"
+if not defined DEVRESOURCES_SESSION if exist "%LITHICA_BUILDS_ROOT%\Shared\lithica-env-CloudSync.cmd" call "%LITHICA_BUILDS_ROOT%\Shared\lithica-env-CloudSync.cmd"
 set "LITHICA_PRODUCT_ROOT=%LITHICA_BUILDS_ROOT%\CloudSync"
 set "LITHICA_SHARED_ROOT=%LITHICA_BUILDS_ROOT%\Shared"
 set "FLUTTER_ROOT=%LITHICA_SHARED_ROOT%\flutter-sdk"
@@ -15,9 +24,9 @@ set "ANDROID_HOME=%ANDROID_SDK_ROOT%"
 set "ANDROID_USER_HOME=%LITHICA_SHARED_ROOT%\android-user-home"
 set "PUB_CACHE=%LITHICA_SHARED_ROOT%\pub-cache"
 set "GRADLE_USER_HOME=%LITHICA_SHARED_ROOT%\gradle"
-set "TEMP=%LITHICA_PRODUCT_ROOT%\system-temp"
+if not defined DEVRESOURCES_SESSION set "TEMP=%LITHICA_PRODUCT_ROOT%\system-temp"
 if defined DEV_RESOURCE_SESSION_TEMP set "TEMP=%DEV_RESOURCE_SESSION_TEMP%"
-set "TMP=%TEMP%"
+if not defined DEVRESOURCES_SESSION set "TMP=%TEMP%"
 if defined DEV_RESOURCE_SESSION_TEMP set "TMP=%DEV_RESOURCE_SESSION_TEMP%"
 set "PATH=%JAVA_HOME%\bin;%FLUTTER_ROOT%\bin;%ANDROID_SDK_ROOT%\platform-tools;%PATH%"
 if not exist "%TEMP%" mkdir "%TEMP%" >nul 2>&1

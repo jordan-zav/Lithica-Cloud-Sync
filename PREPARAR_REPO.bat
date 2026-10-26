@@ -1,3 +1,12 @@
+@rem DevResources: configuracion local opcional; el repositorio sigue siendo portable.
+@if /I "%DEVRESOURCES_WORKSPACE%"=="%~dp0" goto devresources_ready
+@if not exist "%~dp0.devresources.local.cmd" goto devresources_ready
+@setlocal
+@set "DEVRESOURCES_ENTRY=%~f0"
+@set "DEVRESOURCES_ARGUMENTS=%*"
+@call "%~dp0.devresources.local.cmd"
+@exit /b %errorlevel%
+:devresources_ready
 @echo off
 setlocal EnableExtensions
 chcp 65001 >nul
