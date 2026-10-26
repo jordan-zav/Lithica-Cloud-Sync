@@ -19,3 +19,11 @@ Usar los lanzadores del repositorio activa estas protecciones. Ejecutar flutter,
 Las carpetas antiguas de D: se conservan como enlaces de compatibilidad para entornos y herramientas que contienen rutas absolutas. No son copias adicionales de los recursos. No borrarlas sin revisar esas referencias.
 
 Tras limpiar cachés, la siguiente compilación descargará o regenerará sus intermedios y puede tardar más. No se limpian automáticamente sesiones ajenas por su antigüedad.
+
+## Distribución vigente del código y las sesiones
+
+En esta PC el código fuente, los clones, las copias aisladas de código y los scripts auxiliares permanecen en E:. D:\DevResources se reserva para SDK, dependencias, cachés, recursos persistentes y compilados. Los workspaces antiguos con código bajo D: no son una plantilla para crear copias nuevas.
+
+DART_DATA_HOME apunta a D:\DevResources\Shared\dart-data. TEMP y TMP se configuran únicamente para la sesión de herramientas y compilación. Para comandos directos, usar Invoke-ResourceTask.ps1 con el producto y un ScriptPath o BatchPath, o el lanzador controlado existente. El supervisor mantiene el bloqueo del producto y transmite el entorno al comando hijo.
+
+La política de esta PC mantiene un máximo de dos compilaciones pesadas; la existencia de un override técnico no autoriza aumentarlo. No limpiar sesiones activas, datos, credenciales, bases compartidas, enlaces de compatibilidad ni Releases. Consultar [estado actual](../ESTADO_ACTUAL.md) para el flujo del producto.

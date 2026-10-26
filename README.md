@@ -33,7 +33,7 @@ Consulta el texto completo en [LICENSE](LICENSE). Las versiones anteriores conse
 
 ## Instalación
 
-1. Descarga Lithica Cloud Sync-2.0.4.zip desde la sección Releases del repositorio.
+1. Obtén un ZIP instalable del plugin desde un release verificado, si está disponible, o prepáralo con EMPAQUETAR_LITHICA_CLOUD_SYNC.bat. La versión del código no garantiza que exista un adjunto de release.
 2. Abre QGIS.
 3. Ve a Complementos y luego a Administrar e instalar complementos.
 4. Selecciona Instalar a partir de ZIP.
@@ -60,3 +60,9 @@ Los archivos descargados se validan antes de extraerse. Se rechazan rutas insegu
 Desarrollado por [GisGeo Dev](https://gisgeo.dev).
 
 Para consultas o errores, utiliza el [seguimiento de incidencias](https://github.com/jordan-zav/lithica-cloud-sync/issues).
+
+## Documentación vigente
+
+[Estado actual, operación y límites](ESTADO_ACTUAL.md) · [Inventario completo de guías y registros](DOCUMENTACION.md).
+
+Revisión documental del 26 de octubre de 2026. Las versiones y validaciones de registros antiguos conservan su fecha; no acreditan otra publicación ni una nueva ejecución de pruebas.
