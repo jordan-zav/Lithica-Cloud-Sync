@@ -22,7 +22,7 @@ Consulta el texto completo en [LICENSE](LICENSE). Las versiones anteriores conse
 
 ## Funciones principales
 
-- Conexión segura con Google Drive usando el permiso limitado drive.file.
+- Conexión segura con Google Drive usando el permiso de solo lectura drive.readonly. La lógica del plugin busca respaldos dentro de las carpetas Lithica Explorer y Lithica Mapper; el alcance OAuth autoriza lectura de Drive y no se limita técnicamente a archivos creados por el plugin.
 - Detección de las carpetas Lithica Explorer y Lithica Mapper en Mi unidad.
 - Identificación visible del producto de origen en la lista de proyectos.
 - Inventario agrupado de Drive y búsqueda local rápida, tolerante a mayúsculas y tildes.
