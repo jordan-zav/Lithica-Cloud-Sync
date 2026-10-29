@@ -1,3 +1,7 @@
+# Referencia a las instrucciones compartidas
+
+Antes de trabajar en este repositorio, lee y aplica las [instrucciones compartidas de Lithica](../AGENTS.md), situadas en LithicaRepos/AGENTS.md. Conserva también las instrucciones específicas de este archivo y de los AGENTS.md de sus subcarpetas. Si el archivo compartido no está disponible, informa de ello y no inventes su contenido ni crees una copia independiente que pueda quedar desactualizada.
+
 # Instrucciones de trabajo
 
 Se aplican las instrucciones de recursos y conservación del AGENTS.md superior. Conserva los clones existentes en la raíz real de cada equipo: E: en la laptop y O:\0. Projects\LithicaRepos en esta PC. Utiliza SDK, cachés y temporales de herramientas en D:\DevResources mediante los lanzadores existentes.
